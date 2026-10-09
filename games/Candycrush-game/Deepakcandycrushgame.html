@@ -72,7 +72,10 @@
                 font-size: 2.3rem;
                 font-weight: bold;
             }
-        </style>
+        
+/* Responsive fit for the arcade collection; gameplay logic unchanged */
+html{min-height:100%}body{min-height:100svh;box-sizing:border-box;padding:10px 12px 14px;gap:0}h1{font-size:clamp(1.7rem,4.2vh,3rem);line-height:1.1;margin:8px 0 10px}h2{font-size:clamp(1.25rem,3.2vh,2.1rem);line-height:1.1;margin:8px 0 12px}#score{font-size:inherit}#board{width:min(450px,88vw,54svh);height:auto;aspect-ratio:1;flex:0 0 auto;box-sizing:border-box}#board img{width:calc(100% / 9);height:calc(100% / 9);object-fit:contain;flex:0 0 auto}@media(max-height:720px){body{padding-top:4px;padding-bottom:4px}h1{font-size:clamp(1.4rem,4vh,2rem);margin:3px 0 5px}h2{font-size:clamp(1.1rem,3vh,1.5rem);margin:3px 0 7px}#board{width:min(450px,82vw,49svh)}}
+</style>
     </head>
 
     <body>

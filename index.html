@@ -33,7 +33,8 @@
 const $=s=>document.querySelector(s), body=$('#gameBody'), modal=$('#modal');let cleanup=()=>{}, current='';
 $('#year').textContent=new Date().getFullYear();
 const gameNames={puzzle:'🧩 Sliding Puzzle',candy:'🍬 Candy Pop',cards:'🃏 Memory Cards',dino:'🦖 Dino Dash',rps:'✊ Rock Paper Scissors',snake:'🐍 Snake',sudoku:'🔢 Sudoku',mole:'🔨 Whack-a-Mole',pokemon:'⚡ Monster Match'};
-function launch(name){closeGame(false);current=name;$('#gameTitle').textContent=gameNames[name];modal.classList.add('open');document.body.style.overflow='hidden';({puzzle,candy,cards,dino,rps,snake,sudoku,mole,pokemon})[name](); }
+const originalGamePages={puzzle:'/games/Puzzle-game/Avengersimgpuzzlegame.html',candy:'/games/Candycrush-game/Deepakcandycrushgame.html',cards:'/games/CardsGame/Deepak_cardsgame.html',dino:'/games/Dino-game/Deepak_dinogame.html',rps:'/games/Rock-paper-scissor-game/rockpaper.html',snake:'/games/Snake-Game/snake.html',sudoku:'/games/Sudoku-game/Deepak_sudokugame.html',mole:'/games/Whack-a-Mole/whackamole.html',pokemon:'/games/Pokemon-swap-game/index.html'};
+function launch(name){const page=originalGamePages[name];if(page){window.location.href=page;return}status('Game page not found. Please return to the arcade shelf.');}
 function closeGame(clear=true){cleanup();cleanup=()=>{};modal.classList.remove('open');document.body.style.overflow='';if(clear){body.innerHTML='';current='';}}
 modal.addEventListener('click',e=>{if(e.target===modal)closeGame()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('open'))closeGame()});
 function intro(s){return '<p class="game-intro">'+s+'</p>'}function btn(label,fn,cls='btn'){return '<button class="'+cls+'" onclick="'+fn+'">'+label+'</button>'}function status(s){const el=$('#status');if(el)el.textContent=s}function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}

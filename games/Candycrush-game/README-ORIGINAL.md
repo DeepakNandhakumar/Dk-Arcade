@@ -1,0 +1,6 @@
+# Candycrush-game — Original Source
+
+This folder contains the original files imported from [Candycrush-game](https://github.com/DeepakNandhakumar/Candycrush-game).
+
+The original HTML, CSS/JS (where present), images, and supporting assets are preserved here.
+Open the relevant HTML file to run this game locally. The root DK Arcade homepage remains at .

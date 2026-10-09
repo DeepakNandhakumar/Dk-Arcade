@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sudoku</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif, sans-serif;
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin: 5px 0;
+            color: #333;
+        }
+
+        #board {
+            width: 500px;
+            height: 500px;
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            grid-template-rows: repeat(9, 1fr);
+            gap: 2px;
+            margin: 20px 0;
+            background-color: rgba(255, 255, 255, 0.95);
+            border: 3px solid #444;
+            border-radius: 15px;
+            box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .tile {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            transition: background-color 0.3s, border-color 0.3s, transform 0.3s;
+        }
+
+        .tile:hover {
+            transform: scale(1.05);
+            cursor: pointer;
+        }
+
+        .tile-correct {
+            background-color: #c8e6c9;
+            border-color: #81c784;
+        }
+
+        .tile-incorrect {
+            background-color: #ffccbc;
+            border-color: #e57373;
+        }
+
+        .number {
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 2px solid #bbb;
+            margin: 2px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .number:hover {
+            transform: scale(1.1);
+        }
+
+        .number-selected {
+            background-color: #faad76;
+            color: #fff;
+            border-color: #faad76;
+        }
+
+        #digits {
+            display: flex;
+            justify-content: center;
+            margin: 15px 0;
+        }
+
+        #controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        button {
+            background-color: #faad76;
+            color: #fff;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        button:hover {
+            background-color: #faad76;
+            transform: scale(1.05);
+        }
+
+        #timer {
+            font-weight: bold;
+            font-size: 1.3rem;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sudoku</h1>
+    <h2 id="errors">Errors: 0</h2>
+    <h2 id="timer">Time: 00:00</h2>
+
+    <!-- 9x9 board -->
+    <div id="board"></div>
+
+    <div id="digits"></div>
+
+    <div id="controls">
+        <button id="clear">Clear Selection</button>
+        <button id="reset">Reset Game</button>
+    </div>
+
+    <script>
+        var numSelected = null;
+        var errors = 0;
+
+        var board = [
+            "--74916-5",
+            "2---6-3-9",
+            "-----7-1-",
+            "-586----4",
+            "--3----9-",
+            "--62--187",
+            "9-4-7---2",
+            "67-83----",
+            "81--45---"
+        ];
+
+        var solution = [
+            "387491625",
+            "241568379",
+            "569327418",
+            "758619234",
+            "123784596",
+            "496253187",
+            "934176852",
+            "675832941",
+            "812945763"
+        ];
+
+        window.onload = function() {
+            setGame();
+            startTimer();
+        }
+
+        function setGame() {
+            // Digits 1-9
+            for (let i = 1; i <= 9; i++) {
+                let number = document.createElement("div");
+                number.id = i;
+                number.innerText = i;
+                number.addEventListener("click", selectNumber);
+                number.classList.add("number");
+                document.getElementById("digits").appendChild(number);
+            }
+
+            // Board 9x9
+            for (let r = 0; r < 9; r++) {
+                for (let c = 0; c < 9; c++) {
+                    let tile = document.createElement("div");
+                    tile.id = r.toString() + "-" + c.toString();
+                    if (board[r][c] != "-") {
+                        tile.innerText = board[r][c];
+                        tile.classList.add("tile");
+                        tile.classList.add("tile-start");
+                    } else {
+                        tile.classList.add("tile");
+                    }
+                    if (r == 2 || r == 5) {
+                        tile.style.borderBottom = '3px solid #444';
+                    }
+                    if (c == 2 || c == 5) {
+                        tile.style.borderRight = '3px solid #444';
+                    }
+                    tile.addEventListener("click", selectTile);
+                    document.getElementById("board").append(tile);
+                }
+            }
+        }
+
+        function selectNumber() {
+            if (numSelected != null) {
+                numSelected.classList.remove("number-selected");
+            }
+            numSelected = this;
+            numSelected.classList.add("number-selected");
+        }
+
+        function selectTile() {
+            if (numSelected) {
+                if (this.innerText != "") {
+                    return;
+                }
+
+                let coords = this.id.split("-");
+                let r = parseInt(coords[0]);
+                let c = parseInt(coords[1]);
+
+                if (solution[r][c] == numSelected.id) {
+                    this.innerText = numSelected.id;
+                    this.classList.add("tile-correct");
+                    checkIfSolved(); // Check if the puzzle is solved after placing a number
+                } else {
+                    errors += 1;
+                    document.getElementById("errors").innerText = "Errors: " + errors;
+                    this.classList.add("tile-incorrect");
+                }
+            }
+        }
+
+        function checkIfSolved() {
+            let solved = true;
+            for (let r = 0; r < 9; r++) {
+                for (let c = 0; c < 9; c++) {
+                    let tile = document.getElementById(r.toString() + "-" + c.toString());
+                    if (tile.innerText === "" || tile.innerText !== solution[r][c]) {
+                        solved = false;
+                        break;
+                    }
+                }
+                if (!solved) break;
+            }
+            if (solved) {
+                clearInterval(timerInterval);
+                alert("Congratulations! You've solved the puzzle!");
+            }
+        }
+
+        document.getElementById("clear").addEventListener("click", function() {
+            if (numSelected) {
+                numSelected.classList.remove("number-selected");
+                numSelected = null;
+            }
+        });
+
+        document.getElementById("reset").addEventListener("click", function() {
+            errors = 0;
+            document.getElementById("errors").innerText = "Errors: " + errors;
+            numSelected = null;
+
+            let tiles = document.querySelectorAll(".tile");
+            tiles.forEach(tile => {
+                if (!tile.classList.contains("tile-start")) {
+                    tile.innerText = "";
+                    tile.classList.remove("tile-correct", "tile-incorrect");
+                }
+            });
+
+            // Reset timer
+            clearInterval(timerInterval);
+            document.getElementById("timer").innerText = "Time: 00:00";
+            startTimer();
+        });
+
+        let startTime;
+        let timerInterval;
+
+        function startTimer() {
+            startTime = new Date();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function updateTimer() {
+            let elapsed = Math.floor((new Date() - startTime) / 1000);
+            let minutes = Math.floor(elapsed / 60);
+            let seconds = elapsed % 60;
+            document.getElementById("timer").innerText =
+                "Time: " + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+        }
+    </script>
+</body>
+</html>

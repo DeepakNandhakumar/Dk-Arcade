@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon Cards Match</title>
+    <style>
+        body {
+            background: url("./pokemon-bg2.jpeg");
+            background-size: cover;
+            background-position: center;
+            font-family: 'Poppins', Arial, Helvetica, sans-serif;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #game-container {
+            backdrop-filter: blur(10px);
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3rem;
+            text-shadow: 4px 4px 6px rgba(0, 0, 0, 0.7);
+            margin: 10px;
+            color: #ffcc00;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+
+        #board {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .card {
+            height: 128px;
+            width: 90px;
+            border-radius: 10px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+        .hidden {
+            opacity: 0.3;
+        }
+
+        #stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            font-size: 1.2rem;
+        }
+
+        #timer, #errors, #score {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            color: #fff;
+            background-color: #ff0000;
+            border: none;
+            border-radius: 10px;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #cc0000;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>Pokémon Cards Match</h1>
+        <div id="stats">
+            <div id="timer">Time: 0s</div>
+            <div id="errors">Errors: 0</div>
+            <div id="score">Score: 0</div>
+        </div>
+        <div id="board"></div>
+        <button id="restart">Restart Game</button>
+    </div>
+
+    <script>
+        let errors = 0;
+        let score = 0;
+        let timer = 0;
+        let interval;
+        let cardList = [
+            "darkness", "double", "fairy", "fighting", "fire",
+            "grass", "lightning", "metal", "psychic", "water"
+        ];
+
+        let cardSet, board = [];
+        let rows = 4, columns = 5;
+        let card1Selected, card2Selected;
+        const boardDiv = document.getElementById("board");
+
+        window.onload = function() {
+            startGame();
+            document.getElementById('restart').addEventListener('click', restartGame);
+        }
+
+        function startGame() {
+            shuffleCards();
+            generateBoard();
+            startTimer();
+        }
+
+        function shuffleCards() {
+            cardSet = cardList.concat(cardList);
+            for (let i = 0; i < cardSet.length; i++) {
+                let j = Math.floor(Math.random() * cardSet.length);
+                [cardSet[i], cardSet[j]] = [cardSet[j], cardSet[i]];
+            }
+        }
+
+        function generateBoard() {
+            boardDiv.innerHTML = '';
+            for (let r = 0; r < rows; r++) {
+                let row = [];
+                for (let c = 0; c < columns; c++) {
+                    let cardImg = cardSet.pop();
+                    row.push(cardImg);
+
+                    let card = document.createElement("img");
+                    card.id = `${r}-${c}`;
+                    card.src = 'back.jpg';
+                    card.classList.add("card");
+                    card.addEventListener("click", selectCard);
+                    boardDiv.append(card);
+                }
+                board.push(row);
+            }
+            setTimeout(hideCards, 2000);
+        }
+
+        function hideCards() {
+            document.querySelectorAll(".card").forEach(card => card.src = "back.jpg");
+        }
+
+        function selectCard() {
+            if (this.src.includes("back")) {
+                if (!card1Selected) {
+                    card1Selected = this;
+                    revealCard(card1Selected);
+                } else if (!card2Selected && this !== card1Selected) {
+                    card2Selected = this;
+                    revealCard(card2Selected);
+                    setTimeout(checkMatch, 1000);
+                }
+            }
+        }
+
+        function revealCard(card) {
+            let [r, c] = card.id.split("-").map(Number);
+            card.src = board[r][c] + ".jpg";
+        }
+
+        function checkMatch() {
+            if (card1Selected.src === card2Selected.src) {
+                card1Selected.classList.add('hidden');
+                card2Selected.classList.add('hidden');
+                score += 10;
+                document.getElementById("score").innerText = `Score: ${score}`;
+            } else {
+                card1Selected.src = "back.jpg";
+                card2Selected.src = "back.jpg";
+                errors++;
+                document.getElementById("errors").innerText = `Errors: ${errors}`;
+            }
+            card1Selected = null;
+            card2Selected = null;
+
+            if (document.querySelectorAll('.hidden').length === rows * columns) {
+                clearInterval(interval);
+                alert("You won! Final Score: " + score);
+            }
+        }
+
+        function startTimer() {
+            clearInterval(interval);
+            interval = setInterval(() => {
+                timer++;
+                document.getElementById("timer").innerText = `Time: ${timer}s`;
+            }, 1000);
+        }
+
+        function restartGame() {
+            errors = 0;
+            score = 0;
+            timer = 0;
+            board = [];
+            document.getElementById("errors").innerText = `Errors: ${errors}`;
+            document.getElementById("score").innerText = `Score: ${score}`;
+            document.getElementById("timer").innerText = `Time: ${timer}s`;
+            startGame();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chrome Dinosaur Game</title>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            text-align: center;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        h1 {
+            margin-top: 50px;
+            font-size: 48px;
+            color: #333;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        #board {
+            background-color: #fff;
+            border: 2px solid #333;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            margin: 20px auto;
+            display: block;
+        }
+
+        .score {
+            font-size: 24px;
+            color: #333;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .game-over {
+            font-size: 36px;
+            color: #ff0000;
+            font-weight: bold;
+            animation: blink 1s infinite;
+            margin-top: 20px;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <h1>Chrome Dinosaur Game</h1>
+    <canvas id="board"></canvas>
+    <div class="score" id="score">Score: 0</div>
+    <script>
+        let board;
+        let boardWidth = 1200;
+        let boardHeight = 300;
+        let context;
+
+        // Dino variables
+        let dinoWidth = 88;
+        let dinoHeight = 94;
+        let dinoX = 50;
+        let dinoY = boardHeight - dinoHeight;
+        let dinoImg;
+        let dino = { x: dinoX, y: dinoY, width: dinoWidth, height: dinoHeight };
+
+        // Cactus variables
+        let cactusArray = [];
+        let cactus1Width = 34;
+        let cactus2Width = 69;
+        let cactus3Width = 102;
+        let cactusHeight = 70;
+        let cactusX = boardWidth;
+        let cactusY = boardHeight - cactusHeight;
+
+        let cactus1Img, cactus2Img, cactus3Img;
+
+        // Physics variables
+        let velocityX = -5; // Reduced speed to make dino run slower
+        let velocityY = 0;
+        let gravity = 0.4;
+
+        let gameOver = false;
+        let score = 0;
+
+        window.onload = function() {
+            board = document.getElementById("board");
+            board.height = boardHeight;
+            board.width = boardWidth;
+            context = board.getContext("2d");
+
+            dinoImg = new Image();
+            dinoImg.src = "dino.png";
+            dinoImg.onload = function() {
+                context.drawImage(dinoImg, dino.x, dino.y, dino.width, dino.height);
+            }
+
+            cactus1Img = new Image();
+            cactus1Img.src = "cactus1.png";
+            cactus2Img = new Image();
+            cactus2Img.src = "cactus2.png";
+            cactus3Img = new Image();
+            cactus3Img.src = "cactus3.png";
+
+            requestAnimationFrame(update);
+            setInterval(placeCactus, 1500); // Increased interval to add more gap between cacti
+            document.addEventListener("keydown", moveDino);
+        }
+
+        function update() {
+            requestAnimationFrame(update);
+            if (gameOver) {
+                context.font = "36px Courier";
+                context.fillStyle = "red";
+                context.fillText("Game Over!", boardWidth / 2 - 100, boardHeight / 2);
+                document.getElementById("score").classList.add("game-over");
+                return;
+            }
+
+            context.clearRect(0, 0, board.width, board.height);
+
+            // Dino gravity
+            velocityY += gravity;
+            dino.y = Math.min(dino.y + velocityY, dinoY);
+            context.drawImage(dinoImg, dino.x, dino.y, dino.width, dino.height);
+
+            // Cactus movement
+            for (let i = 0; i < cactusArray.length; i++) {
+                let cactus = cactusArray[i];
+                cactus.x += velocityX;
+                context.drawImage(cactus.img, cactus.x, cactus.y, cactus.width, cactus.height);
+
+                if (detectCollision(dino, cactus)) {
+                    gameOver = true;
+                    dinoImg.src = "dino-dead.png";
+                    dinoImg.onload = function() {
+                        context.drawImage(dinoImg, dino.x, dino.y, dino.width, dino.height);
+                    }
+                }
+            }
+
+            // Score display
+            score++;
+            document.getElementById("score").innerHTML = "Score: " + score;
+        }
+
+        function moveDino(e) {
+            if (gameOver) return;
+
+            if ((e.code == "Space" || e.code == "ArrowUp") && dino.y == dinoY) {
+                velocityY = -10;
+            }
+        }
+
+        function placeCactus() {
+            if (gameOver) return;
+
+            let cactus = { img: null, x: cactusX, y: cactusY, width: null, height: cactusHeight };
+            let placeCactusChance = Math.random();
+
+            if (placeCactusChance > 0.95) { // Reduced chances to create more gaps
+                cactus.img = cactus3Img;
+                cactus.width = cactus3Width;
+            } else if (placeCactusChance > 0.85) {
+                cactus.img = cactus2Img;
+                cactus.width = cactus2Width;
+            } else if (placeCactusChance > 0.70) {
+                cactus.img = cactus1Img;
+                cactus.width = cactus1Width;
+            } else {
+                return; // Skip placing cactus to create more space between obstacles
+            }
+
+            cactusArray.push(cactus);
+            if (cactusArray.length > 5) {
+                cactusArray.shift();
+            }
+        }
+
+        function detectCollision(a, b) {
+            return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
+        }
+    </script>
+</body>
+</html>

@@ -34,8 +34,26 @@ This is a static site. Import **[DeepakNandhakumar/Dk-Arcade](https://github.com
 
 Vercel serves the root `index.html` directly. Every game runs in the browser.
 
+## Original source code (preserved)
+
+The complete original project files are also included in the `games/` directory. Each project has its own folder with its original HTML files, supporting images/assets, and any archive files that were present in the source repository.
+
+| Game project | Folder in this repository |
+|---|---|
+| Puzzle game | `games/Puzzle-game/` |
+| Candy Crush | `games/Candycrush-game/` |
+| Cards game | `games/CardsGame/` |
+| Dino game | `games/Dino-game/` |
+| Rock Paper Scissors | `games/Rock-paper-scissor-game/` |
+| Snake | `games/Snake-Game/` |
+| Sudoku | `games/Sudoku-game/` |
+| Whack-a-Mole | `games/Whack-a-Mole/` |
+| Pokémon Swap | `games/Pokemon-swap-game/` |
+
+To run an original version, open the relevant HTML file inside its project folder. Keep the files and assets in the same folder structure so relative image paths continue to work. The root `index.html` remains the polished DK Arcade landing page.
+
 ## Original project repositories
-These were the source projects that inspired the combined arcade:
+These are the original source repositories:
 1. [Puzzle-game](https://github.com/DeepakNandhakumar/Puzzle-game)
 2. [Candycrush-game](https://github.com/DeepakNandhakumar/Candycrush-game)
 3. [CardsGame](https://github.com/DeepakNandhakumar/CardsGame)

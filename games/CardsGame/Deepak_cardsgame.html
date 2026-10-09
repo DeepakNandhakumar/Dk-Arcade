@@ -46,14 +46,17 @@
                 font-weight: bold;
                 margin-top: 20px;
             }
-        </style>
+        
+/* Responsive layout for standard desktop and laptop viewports */
+*{box-sizing:border-box}body{margin:0;min-height:100svh;padding:8px 14px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center}h1{font-size:clamp(1.65rem,4.2vh,3rem);margin:4px 0 8px}h2{font-size:clamp(1.05rem,2.6vh,1.6rem);margin:5px 0}#dealer-cards,#your-cards{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;width:100%;gap:clamp(2px,.5vw,8px)}#dealer-cards img,#your-cards img{width:auto;height:clamp(76px,17vh,150px);max-width:min(18vw,100px);object-fit:contain;margin:2px}#hit,#stay{width:clamp(76px,10vw,100px);height:clamp(38px,6vh,50px);font-size:clamp(15px,2.2vh,20px);margin:7px}#results{font-size:clamp(16px,2.6vh,24px);margin:8px 0}@media(max-height:650px){body{justify-content:flex-start}#dealer-cards img,#your-cards img{height:clamp(60px,15vh,98px)}h1{font-size:1.5rem}}
+</style>
     </head>
 
     <body>
         <h1>Blackjack Game</h1>
         <h2>Dealer: <span id="dealer-sum"></span></h2>
         <div id="dealer-cards">
-            <img id="hidden" src="./cards/BACK.png">
+            <img id="hidden" src="./BACK.png">
         </div>
 
         <h2>You: <span id="your-sum"></span></h2>
@@ -113,10 +116,10 @@ function startGame() {
     // console.log(hidden);
     // console.log(dealerSum);
     while (dealerSum < 17) {
-        //<img src="./cards/4-C.png">
+        //<img src="./4-C.png">
         let cardImg = document.createElement("img");
         let card = deck.pop();
-        cardImg.src = "./cards/" + card + ".png";
+        cardImg.src = "./" + card + ".png";
         dealerSum += getValue(card);
         dealerAceCount += checkAce(card);
         document.getElementById("dealer-cards").append(cardImg);
@@ -126,7 +129,7 @@ function startGame() {
     for (let i = 0; i < 2; i++) {
         let cardImg = document.createElement("img");
         let card = deck.pop();
-        cardImg.src = "./cards/" + card + ".png";
+        cardImg.src = "./" + card + ".png";
         yourSum += getValue(card);
         yourAceCount += checkAce(card);
         document.getElementById("your-cards").append(cardImg);
@@ -145,7 +148,7 @@ function hit() {
 
     let cardImg = document.createElement("img");
     let card = deck.pop();
-    cardImg.src = "./cards/" + card + ".png";
+    cardImg.src = "./" + card + ".png";
     yourSum += getValue(card);
     yourAceCount += checkAce(card);
     document.getElementById("your-cards").append(cardImg);
@@ -161,7 +164,7 @@ function stay() {
     yourSum = reduceAce(yourSum, yourAceCount);
 
     canHit = false;
-    document.getElementById("hidden").src = "./cards/" + hidden + ".png";
+    document.getElementById("hidden").src = "./" + hidden + ".png";
 
     let message = "";
     if (yourSum > 21) {

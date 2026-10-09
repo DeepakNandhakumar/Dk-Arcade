@@ -1,0 +1,65 @@
+name: Import Original Arcade Projects
+
+on:
+  push:
+    paths:
+      - ".github/workflows/import-games.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  import-games:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout DK Arcade
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Copy original repositories into games folders
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p games
+          repos=(
+            "Puzzle-game"
+            "Candycrush-game"
+            "CardsGame"
+            "Dino-game"
+            "Rock-paper-scissor-game"
+            "Snake-Game"
+            "Sudoku-game"
+            "Whack-a-Mole"
+            "Pokemon-swap-game"
+          )
+          for repo in "${repos[@]}"; do
+            echo "Importing ${repo}..."
+            tmp="$(mktemp -d)"
+            git clone --depth 1 "https://github.com/DeepakNandhakumar/${repo}.git" "$tmp/source"
+            mkdir -p "games/${repo}"
+            cp -a "$tmp/source/." "games/${repo}/"
+            rm -rf "games/${repo}/.git"
+            cat > "games/${repo}/README-ORIGINAL.md" <<EOF
+          # ${repo} — Original Source
+
+          This folder contains the original files imported from [${repo}](https://github.com/DeepakNandhakumar/${repo}).
+
+          The original HTML, CSS/JS (where present), images, and supporting assets are preserved here.
+          Open the relevant HTML file to run this game locally. The root DK Arcade homepage remains at `/index.html`.
+          EOF
+            rm -rf "$tmp"
+          done
+      - name: Commit imported files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add games
+          if git diff --cached --quiet; then
+            echo "No imported file changes to commit."
+            exit 0
+          fi
+          git commit -m "Import original source code and assets for all arcade games"
+          git push

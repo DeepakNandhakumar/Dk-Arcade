@@ -2,8 +2,8 @@ name: Import Original Arcade Projects
 
 on:
   push:
-    paths:
-      - ".github/workflows/import-games.yml"
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -11,6 +11,7 @@ permissions:
 
 jobs:
   import-games:
+    if: github.event.head_commit.message != 'Import original source code and assets for all arcade games'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout DK Arcade

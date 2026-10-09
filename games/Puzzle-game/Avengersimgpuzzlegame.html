@@ -5,22 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Slide Puzzle</title>
     <style>
+:root{color-scheme:dark;--panel:#111d35;--line:rgba(255,255,255,.13);--accent:#7c9cff;--text:#eef3ff;--muted:#a9b8d6}
 *{box-sizing:border-box}
 html,body{width:100%;height:100%;min-height:0;margin:0;overflow:hidden}
-body{font-family:Arial,Helvetica,sans-serif;color:#001525;background:linear-gradient(135deg,rgb(213,210,210),rgb(150,150,202));height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:8px;gap:clamp(4px,1vh,10px)}
-#title{width:auto;height:clamp(42px,9vh,82px);max-width:70vw;object-fit:contain;margin:0}
-#container{display:flex;align-items:center;justify-content:center;gap:clamp(8px,1.5vw,18px);background:rgba(255,255,255,.8);padding:clamp(6px,1.2vh,14px);border-radius:15px;box-shadow:0 0 15px rgba(0,0,0,.2);max-width:100%;max-height:76svh}
-#reference-box{width:min(30vw,50svh);height:min(30vw,50svh);flex:0 1 auto;display:flex;justify-content:center;align-items:center;margin:0}
-#reference-box img{width:100%;height:100%;object-fit:contain}
-#board{width:min(36vw,58svh);height:min(36vw,58svh);background:lightblue;border:clamp(3px,.6vw,8px) solid #0c67ae;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:repeat(5,minmax(0,1fr));flex:0 1 auto;position:relative;overflow:hidden}
-#board img{width:100%;height:100%;min-width:0;min-height:0;object-fit:cover;border:1px solid #0c67ae;cursor:grab;transition:transform .2s ease-in-out}
-#board img[data-empty="true"]{background:rgba(12,103,174,.12);visibility:visible;cursor:default}
-#board img.correct{border:2px solid green}
-h1{font-size:clamp(14px,2.5vh,22px);line-height:1;margin:0}
-#message{font-size:clamp(14px,2.5vh,22px);color:green;display:none;margin:0}
-#play-again{display:none;border:0;border-radius:999px;background:#0c67ae;color:white;padding:9px 20px;font-weight:700;font-size:clamp(13px,2vh,16px);cursor:pointer}
-@media(max-aspect-ratio:1/1){#container{flex-direction:column;max-height:80svh}#reference-box{display:none}#board{width:min(72vw,48svh);height:min(72vw,48svh)}#title{max-width:70vw}}
-@media(max-height:620px){body{padding:3px;gap:4px}#title{height:clamp(30px,7vh,46px)}#container{max-height:78svh}#reference-box{width:min(25vw,40svh);height:min(25vw,40svh)}#board{width:min(32vw,48svh);height:min(32vw,48svh)}}
+body{font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--text);background:radial-gradient(ellipse at top,#243e6b 0%,#111a30 52%,#090f1e 100%);height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:clamp(8px,1.6vh,18px);gap:clamp(7px,1.4vh,14px)}
+#title{height:clamp(38px,7vh,68px);width:auto;max-width:68vw;object-fit:contain;margin:0;filter:drop-shadow(0 4px 12px #0006)}
+#container{display:flex;align-items:center;justify-content:center;gap:clamp(12px,2vw,26px);background:linear-gradient(145deg,rgba(27,43,72,.96),rgba(13,23,42,.98));padding:clamp(10px,1.8vh,20px);border:1px solid var(--line);border-radius:22px;box-shadow:0 22px 70px #0005;max-width:96vw;max-height:76svh}
+#reference-box{width:min(29vw,52svh);height:min(29vw,52svh);flex:0 1 auto;display:flex;justify-content:center;align-items:center;margin:0;padding:8px;background:#0a1222;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+#reference-box img{width:100%;height:100%;object-fit:contain;border-radius:8px}
+#board{width:min(38vw,60svh);height:min(38vw,60svh);background:#0b1528;border:5px solid #526b9d;border-radius:10px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:repeat(5,minmax(0,1fr));gap:2px;flex:0 1 auto;position:relative;overflow:hidden;padding:2px}
+#board img{display:block;width:100%;height:100%;min-width:0;min-height:0;object-fit:cover;border:1px solid #6c83b6;border-radius:2px;cursor:grab;transition:border-color .15s,filter .15s}
+#board img:hover{border-color:#c4d4ff;filter:brightness(1.08)}
+#board img.correct{border:2px solid #52e0a0}
+h1{font-size:clamp(14px,2.2vh,20px);line-height:1.2;margin:0;color:var(--muted);font-weight:600}
+#message{font-size:clamp(14px,2.4vh,21px);color:#52e0a0;display:none;margin:0;font-weight:700}
+#play-again{display:none;border:0;border-radius:999px;background:linear-gradient(100deg,#7190ff,#a47bff);color:#fff;padding:10px 22px;font-weight:700;font-size:clamp(13px,2vh,16px);cursor:pointer;box-shadow:0 5px 20px #526b9d55}
+@media(max-aspect-ratio:1/1){#container{flex-direction:column;max-height:82svh}#reference-box{display:none}#board{width:min(82vw,54svh);height:min(82vw,54svh)}#title{max-width:78vw}}
+@media(max-height:620px){body{padding:4px;gap:5px}#title{height:clamp(28px,6vh,40px)}#container{padding:6px;gap:8px;max-height:78svh}#reference-box{width:min(23vw,38svh);height:min(23vw,38svh)}#board{width:min(31vw,47svh);height:min(31vw,47svh)}}
 </style>
 </head>
 <body>
@@ -36,104 +37,60 @@ h1{font-size:clamp(14px,2.5vh,22px);line-height:1;margin:0}
     <button id="play-again" type="button" onclick="restartPuzzle()">Play Again ↻</button>
 
     <script>
-        const rows = 5, columns = 5;
-        let currTile = null, otherTile = null, turns = 0, solved = false;
-        const solvedOrder = Array.from({length:24},(_,i)=>String(i+1)).concat("");
-        let imgOrder = [];
-
-        window.onload = startPuzzle;
-
-        function startPuzzle() {
-            const board = document.getElementById("board");
-            board.innerHTML = "";
-            turns = 0;
-            solved = false;
-            currTile = null;
-            otherTile = null;
-            document.getElementById("turns").innerText = "0";
-            document.getElementById("message").style.display = "none";
-            document.getElementById("play-again").style.display = "none";
-
-            // Begin from the solved layout and shuffle by valid moves so the puzzle is always solvable.
-            imgOrder = [...solvedOrder];
-            for (let i = 0; i < 180; i++) {
-                const empty = imgOrder.indexOf("");
-                const candidates = [];
-                if (empty % columns > 0) candidates.push(empty - 1);
-                if (empty % columns < columns - 1) candidates.push(empty + 1);
-                if (empty >= columns) candidates.push(empty - columns);
-                if (empty < rows * columns - columns) candidates.push(empty + columns);
-                const pick = candidates[Math.floor(Math.random() * candidates.length)];
-                [imgOrder[empty], imgOrder[pick]] = [imgOrder[pick], imgOrder[empty]];
-            }
-
-            imgOrder.forEach((value,index) => {
-                const tile = document.createElement("img");
-                tile.id = Math.floor(index / columns) + "-" + (index % columns);
-                tile.draggable = value !== "";
-                tile.alt = value ? "Puzzle tile " + value : "Empty puzzle space";
-                if (value) tile.src = value + ".jpg";
-                else {
-                    tile.dataset.empty = "true";
-                    tile.src = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
-                }
-                tile.addEventListener("dragstart", dragStart);
-                tile.addEventListener("dragover", dragOver);
-                tile.addEventListener("dragenter", dragEnter);
-                tile.addEventListener("drop", dragDrop);
-                tile.addEventListener("dragend", dragEnd);
-                tile.addEventListener("click", () => moveTile(tile));
-                board.append(tile);
-            });
+        const rows=5, columns=5;
+        const solvedOrder=Array.from({length:25},(_,i)=>String(i+1));
+        let currTile=null, otherTile=null, turns=0, solved=false;
+        let currentOrder=[];
+        window.onload=startPuzzle;
+        function startPuzzle(){
+          const board=document.getElementById("board");
+          board.innerHTML="";
+          turns=0; solved=false; currTile=null; otherTile=null;
+          document.getElementById("turns").innerText="0";
+          document.getElementById("message").style.display="none";
+          document.getElementById("play-again").style.display="none";
+          currentOrder=[...solvedOrder];
+          do{shuffleArray(currentOrder)}while(currentOrder.every((v,i)=>v===solvedOrder[i]));
+          currentOrder.forEach((value,index)=>{
+            const tile=document.createElement("img");
+            tile.id=Math.floor(index/columns)+"-"+(index%columns);
+            tile.src=value+".jpg"; tile.alt="Puzzle tile "+value; tile.draggable=true;
+            tile.dataset.value=value;
+            tile.addEventListener("dragstart",dragStart);
+            tile.addEventListener("dragover",dragOver);
+            tile.addEventListener("dragenter",dragEnter);
+            tile.addEventListener("drop",dragDrop);
+            tile.addEventListener("dragend",dragEnd);
+            tile.addEventListener("click",()=>{if(currTile&&currTile!==tile){otherTile=tile;dragEnd()}});
+            board.append(tile);
+          });
         }
-
-        function dragStart(e) {
-            if (solved || this.dataset.empty === "true") { e.preventDefault(); return; }
-            currTile = this;
+        function dragStart(e){if(solved){e.preventDefault();return}currTile=this;otherTile=null}
+        function dragOver(e){e.preventDefault()}
+        function dragEnter(e){e.preventDefault()}
+        function dragDrop(e){e.preventDefault();otherTile=this}
+        function dragEnd(){
+          if(!currTile||!otherTile||currTile===otherTile||solved){currTile=null;otherTile=null;return}
+          const a=currTile.id.split("-").map(Number),b=otherTile.id.split("-").map(Number);
+          if(Math.abs(a[0]-b[0])+Math.abs(a[1]-b[1])===1){
+            const src=currTile.src, value=currTile.dataset.value;
+            currTile.src=otherTile.src;currTile.dataset.value=otherTile.dataset.value;
+            otherTile.src=src;otherTile.dataset.value=value;
+            turns++;document.getElementById("turns").innerText=turns;checkPuzzleSolved();
+          }
+          currTile=null;otherTile=null;
         }
-        function dragOver(e) { e.preventDefault(); }
-        function dragEnter(e) { e.preventDefault(); }
-        function dragDrop() { otherTile = this; }
-        function dragEnd() {
-            if (!otherTile || !currTile || currTile === otherTile || solved) return;
-            swapIfAdjacent(currTile, otherTile);
-            currTile = null;
-            otherTile = null;
+        function checkPuzzleSolved(){
+          const tiles=[...document.querySelectorAll("#board img")];
+          let allCorrect=true;
+          tiles.forEach((tile,index)=>{
+            const correct=tile.dataset.value===solvedOrder[index];
+            tile.classList.toggle("correct",correct);if(!correct)allCorrect=false;
+          });
+          if(allCorrect){solved=true;document.getElementById("message").style.display="block";document.getElementById("play-again").style.display="inline-flex";document.querySelectorAll("#board img").forEach(tile=>tile.draggable=false)}
         }
-        function moveTile(tile) {
-            if (solved || tile.dataset.empty === "true") return;
-            const empty = document.querySelector('#board img[data-empty="true"]');
-            if (empty) swapIfAdjacent(tile, empty);
-        }
-        function swapIfAdjacent(first, second) {
-            const a = first.id.split("-").map(Number), b = second.id.split("-").map(Number);
-            if (Math.abs(a[0]-b[0]) + Math.abs(a[1]-b[1]) !== 1) return;
-            const firstSrc = first.getAttribute("src"), secondSrc = second.getAttribute("src");
-            const firstEmpty = first.dataset.empty === "true", secondEmpty = second.dataset.empty === "true";
-            if (secondEmpty) { first.removeAttribute("src"); first.dataset.empty = "true"; first.draggable = false; first.alt = "Empty puzzle space"; }
-            else { first.src = secondSrc; delete first.dataset.empty; first.draggable = true; }
-            if (firstEmpty) { second.removeAttribute("src"); second.dataset.empty = "true"; second.draggable = false; second.alt = "Empty puzzle space"; }
-            else { second.src = firstSrc; delete second.dataset.empty; second.draggable = true; }
-            turns++;
-            document.getElementById("turns").innerText = turns;
-            checkPuzzleSolved();
-        }
-        function checkPuzzleSolved() {
-            const tiles = [...document.querySelectorAll("#board img")];
-            const solvedNow = tiles.every((tile,index) => {
-                const value = tile.dataset.empty === "true" ? "" : tile.getAttribute("src").split("/").pop().replace(".jpg","");
-                const correct = value === solvedOrder[index];
-                tile.classList.toggle("correct",correct && value !== "");
-                return correct;
-            });
-            if (solvedNow) {
-                solved = true;
-                document.getElementById("message").style.display = "block";
-                document.getElementById("play-again").style.display = "inline-flex";
-                document.querySelectorAll("#board img").forEach(tile => tile.draggable = false);
-            }
-        }
-        function restartPuzzle() { startPuzzle(); }
+        function restartPuzzle(){startPuzzle()}
+        function shuffleArray(array){for(let i=array.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[array[i],array[j]]=[array[j],array[i]]}return array}
     </script>
 </body>
 </html>

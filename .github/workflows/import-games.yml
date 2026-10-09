@@ -63,4 +63,5 @@ jobs:
             exit 0
           fi
           git commit -m "Import original source code and assets for all arcade games"
+          git pull --rebase origin main
           git push
